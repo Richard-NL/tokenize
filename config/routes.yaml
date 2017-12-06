@@ -1,0 +1,7 @@
+#index:
+#    path: /
+#    defaults: { _controller: 'App\Controller\DefaultController::index' }
+
+#tokenize:
+#    path: /tokenize
+#    defaults: { _controller: 'App\Controller\DefaultController::tokenize' }
