@@ -7,7 +7,6 @@ class Lexer extends \Doctrine\Common\Lexer
     const T_NONE = 1;
     const T_INTEGER = 2;
     const T_STRING = 3;
-    const T_ACTION_SUBJECT = 4;
 
     const T_INVALID_ACTION = 200;
     const T_GOTO_ACTION = 201;
@@ -67,8 +66,14 @@ class Lexer extends \Doctrine\Common\Lexer
         if (strcasecmp($value, 'open') === 0) {
             return self::T_OPEN_ACTION;
         }
+
+        if (in_array(strtolower($value), ['with', 'using'])) {
+            return self::T_WITH;
+        }
+
+
         if (ctype_alnum($value)) {
-            return self::T_ACTION_SUBJECT;
+            return self::T_STRING;
         }
 
         return self::T_NONE;

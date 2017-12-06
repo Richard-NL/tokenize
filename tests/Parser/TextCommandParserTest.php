@@ -35,13 +35,13 @@ class TextCommandParserTest extends TestCase
         ];
     }
 
-    public function testWithClause()
+    public function testWithValue()
     {
         $textCommandParser = new TextCommandParser('open door with keycard');
         $statement = $textCommandParser->getAST();
         $this->assertInstanceOf(OpenStatement::class, $statement);
         $this->assertSame('door', $statement->getSubject());
-        $this->assertSame('keycard', $statement->getWithClause());
+        $this->assertSame('keycard', $statement->getWithValue());
 
     }
 }

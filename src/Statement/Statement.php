@@ -23,7 +23,7 @@ abstract class Statement
         return $this->subject;
     }
 
-    public function getWithClause(): ?string
+    public function getWithValue(): ?string
     {
         return $this->withClause;
     }

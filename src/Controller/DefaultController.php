@@ -12,9 +12,9 @@ class DefaultController
      */
     public function tokenize()
     {
-        $parser = new \App\Parser\TextCommandParser('get stone');
+        $parser = new \App\Parser\TextCommandParser('open door with keycard');
         $AST = $parser->getAST();
-        var_dump($AST);
+var_dump($AST);
         return new Response('a');
     }
 }

@@ -4,6 +4,8 @@ namespace App\Parser;
 
 class TextCommandParser
 {
+    const IGNORABLE_WORDS = ['the', 'an', 'a', 'to', 'at'];
+
     /** @var Lexer  */
     private $lexer;
 
@@ -11,6 +13,11 @@ class TextCommandParser
     {
         $this->lexer = new Lexer();
         $this->lexer->setInput($textCommand);
+//        while ($this->lexer->moveNext()) {
+//            var_dump($this->lexer->token);
+//        }
+//        var_dump($this->lexer->token);
+//        die;
     }
 
     public function getAST()
@@ -29,18 +36,11 @@ class TextCommandParser
             throw new \RuntimeException('invalid command');
         }
 
-        $value = null;
+        $value = $this->determineValue();
 
-        $ignorableWords = ['the', 'an', 'a', 'to', 'at'];
-        while ($this->lexer->isNextToken(Lexer::T_ACTION_SUBJECT) === false || in_array($this->lexer->lookahead['value'], $ignorableWords)) {
-            $this->lexer->moveNext();
-        }
+        $withValue = $this->determineWithValue();
 
-        $value = $this->lexer->lookahead['value'];
-
-
-
-        return new $statement($value);
+        return new $statement($value, $withValue);
     }
 
     /**
@@ -67,5 +67,47 @@ class TextCommandParser
                 $statement = \App\Statement\InvalidStatement::class;
         }
         return $statement;
+    }
+
+    /**
+     * @return string
+     */
+    private function determineValue(): ?string
+    {
+        while ($this->lexer->isNextToken(Lexer::T_STRING) === false
+            || in_array(
+                $this->lexer->lookahead['value'],
+                self::IGNORABLE_WORDS
+            )
+        ) {
+            if ($this->lexer->moveNext() === false) {
+                break;
+            }
+        }
+
+       return $this->lexer->lookahead['value'];
+    }
+
+    private function isWithConditionPresent(): bool
+    {
+        $hasWithCondition = false;
+        while ($this->lexer->moveNext() === true) {
+            if ($this->lexer->isNextToken(Lexer::T_WITH) ) {
+                $hasWithCondition = true;
+                break;
+            }
+        }
+
+        return $hasWithCondition;
+    }
+
+    private function determineWithValue(): ?string
+    {
+        $withValue = null;
+        if ($this->isWithConditionPresent()) {
+
+            $withValue = $this->determineValue();
+        }
+        return $withValue;
     }
 }
